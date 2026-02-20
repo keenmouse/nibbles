@@ -1,6 +1,6 @@
 # Nibbles
 
-Small PHP utility used at `nibbles.keenmouse.com` for IPv6 nibble conversion used in DNS/SPF workflows.
+Small PHP utility for IPv6 nibble conversion used in DNS/SPF workflows.
 
 ## Purpose
 - Accept an IPv6 address.
