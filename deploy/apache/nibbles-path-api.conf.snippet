@@ -1,0 +1,14 @@
+# Nibbles path API front-controller snippet
+#
+# Purpose:
+# - route /<ipv6> requests to /index.php
+# - keep /.well-known untouched
+# - avoid rewriting real files/directories
+
+RewriteEngine On
+
+RewriteCond %{HTTP_HOST} ^(nibbles\.keenmouse\.com|www\.nibbles\.keenmouse\.com)$ [NC]
+RewriteCond %{REQUEST_URI} !^/\.well-known/
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ /index.php [L]
