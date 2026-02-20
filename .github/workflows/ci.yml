@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  php-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Lint
+        run: php -l index.php
+
+      - name: Start local server
+        run: |
+          php -S 127.0.0.1:8000 > /tmp/nibbles-php-server.log 2>&1 &
+          sleep 2
+
+      - name: Plain API smoke test
+        run: |
+          out="$(curl -sS "http://127.0.0.1:8000/2001:db8::1")"
+          echo "$out"
+          echo "$out" | grep -Eq '\.ip6$'
+          echo "$out" | grep -Fq '8.b.d.0.1.0.0.2.ip6'
+
+      - name: JSON API smoke test
+        run: |
+          out="$(curl -sS -H "Accept: application/json" "http://127.0.0.1:8000/2001:db8::1")"
+          echo "$out"
+          echo "$out" | grep -Fq '"ip": "2001:db8::1"'
+          echo "$out" | grep -Fq '"hex": "20010db8000000000000000000000001"'
+          echo "$out" | grep -Fq '"spf_label"'
+          echo "$out" | grep -Fq '"ip6_arpa"'
+
+      - name: Invalid input returns 400
+        run: |
+          code="$(curl -sS -o /tmp/nibbles-invalid.txt -w "%{http_code}" "http://127.0.0.1:8000/not-an-ipv6")"
+          test "$code" = "400"
+          grep -Fq "Invalid IPv6 address" /tmp/nibbles-invalid.txt
