@@ -57,7 +57,3 @@ Returns fields:
 ## Runtime
 - PHP app (`index.php`)
 - Static icon assets in `icon/`
-
-## Deployment origin
-- Source copied from: `wagner:/home/nibbles/public_html`
-- Local project path: `<local-path>`
